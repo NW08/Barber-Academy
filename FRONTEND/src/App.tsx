@@ -10,6 +10,8 @@ import Community from "./pages/Community";
 import About from "./pages/About";
 import Barber from "./pages/Barber";
 import Signup from "./pages/SignUp";
+import VerifyCode from "./pages/Forgot_Validation.tsx";
+import ResetPassword from "./pages/Forgot_Change.tsx";
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
       {/* Rutas SIN Header/Footer */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/forgot_validation" element={<VerifyCode />} />
+      <Route path="/forgot_change" element={<ResetPassword />} />
     </Routes>
   );
 }

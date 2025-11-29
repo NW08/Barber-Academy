@@ -37,13 +37,7 @@ const Footer: FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <Section
-      crosses
-      className="px-0! py-10! mt-auto backdrop-blur-md bg-black/20"
-    >
-      {/* FIX: 'container' necesita 'mx-auto' para centrarse horizontalmente.
-         Se eliminó 'pl-80'.
-      */}
+    <Section crosses className="px-0! py-5! mt-auto backdrop-blur-md bg-black">
       <div className="container mx-auto flex sm:justify-between lg:backdrop-blur-sm justify-center items-center gap-10 max-sm:flex-col">
         <p className="caption text-n-4 lg:block">
           © {currentYear}. Desarrollo de Aplicaciones Web.

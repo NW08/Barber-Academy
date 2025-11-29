@@ -182,7 +182,7 @@ const Login: React.FC = () => {
               </Link>
 
               <a
-                href="/"
+                href="/forgot_validation"
                 className="text-gray-400 hover:text-[#E69100] transition-colors font-medium"
               >
                 ¿Olvidaste tu contraseña?
