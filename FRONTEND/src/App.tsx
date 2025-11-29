@@ -14,6 +14,7 @@ import ResetPassword from "./pages/Forgot_Change.tsx";
 import Community from "./pages/Community.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import Payments from "./pages/Payments.tsx";
+import Verified from "./pages/Verified.tsx";
 
 function App() {
   return (
@@ -30,10 +31,11 @@ function App() {
       {/* Rutas SIN Header/Footer */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/forgot_validation" element={<VerifyCode />} />
+      <Route path="/validation" element={<VerifyCode />} />
       <Route path="/forgot_change" element={<ResetPassword />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/payment" element={<Payments />} />
+      <Route path="/success" element={<Verified />} />
     </Routes>
   );
 }
