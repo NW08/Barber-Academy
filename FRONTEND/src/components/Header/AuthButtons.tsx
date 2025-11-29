@@ -1,4 +1,4 @@
-import Button from "../design/buttons/Button";
+import Button from "../Buttons/Button";
 
 export const AuthButtons = () => (
   <>

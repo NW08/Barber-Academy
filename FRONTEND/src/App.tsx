@@ -6,12 +6,12 @@ import Layout from "./layout/Layout";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Courses from "./pages/Courses";
-import Community from "./pages/Community";
 import About from "./pages/About";
 import Barber from "./pages/Barber";
 import Signup from "./pages/SignUp";
 import VerifyCode from "./pages/Forgot_Validation.tsx";
 import ResetPassword from "./pages/Forgot_Change.tsx";
+import Community from "./pages/Community.tsx";
 
 function App() {
   return (

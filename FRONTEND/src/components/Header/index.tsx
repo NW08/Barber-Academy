@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { disablePageScroll, enablePageScroll } from "@fluejs/noscroll";
-import { Logo } from "./Logo";
-import { NavLinks } from "./NavLinks";
-import { AuthButtons } from "./AuthButtons";
-import { HamburgerMenu } from "./MenuToggle.tsx";
-import Button from "../design/buttons/Button.tsx";
+import {useEffect, useState} from "react";
+import {useLocation} from "react-router-dom";
+import {disablePageScroll, enablePageScroll} from "@fluejs/noscroll";
+import {Logo} from "./Logo";
+import {NavLinks} from "./NavLinks";
+import {AuthButtons} from "./AuthButtons";
+import {HamburgerMenu} from "./MenuToggle.tsx";
+import Button from "../Buttons/Button.tsx";
 import MenuSvg from "./MenuSvg.tsx";
 
 const Header = () => {

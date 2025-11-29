@@ -1,7 +1,7 @@
 import { type FC } from "react";
 import background from "../assets/pages/Home/background.png";
 import { Link } from "react-router-dom";
-import Notification from "../components/Home/Notification.tsx"; // Importamos Link para navegación
+import Notification from "../components/Home/Notification.tsx";
 
 const Home: FC = () => {
   return (
