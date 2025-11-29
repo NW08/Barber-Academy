@@ -3,7 +3,7 @@ import { ScrollParallax } from "react-just-parallax";
 import WhatsAppIcon from "../components/Community/WhatsApp.tsx";
 import InstagramIcon from "../components/Community/Instagram.tsx";
 import DiscordIcon from "../components/Community/Discord.tsx";
-import background from "../components/Community/community.jpeg";
+import background from "../assets/pages/Community/community.jpeg";
 import AuthGuard from "../components/Guest/Guest.tsx";
 
 const Community: React.FC = () => {
@@ -47,7 +47,7 @@ const Community: React.FC = () => {
         {/* --- HEADER --- */}
         <div className="mb-16 md:mb-24">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6">
-            Únete a la <span className="text-[#E69100]">Comunidad</span>
+            Comunidad <span className="text-[#E69100]">Exclusiva</span>
           </h2>
           <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
             No estás solo en este camino. Conéctate con otros barberos, comparte
@@ -65,7 +65,7 @@ const Community: React.FC = () => {
             >
               <div
                 className="bg-black/80 backdrop-blur-xl rounded-xl p-8 h-full border border-white/5 flex flex-col items-center
-              justify-between transition-transform duration-300"
+              justify-between transition-transform duration-300 group-hover:-translate-y-0.5"
               >
                 <div className="p-4 rounded-full bg-[#25D366]/20 text-[#25D366] mb-6 shadow-[0_0_20px_rgba(37,211,102,0.3)]">
                   <WhatsAppIcon />
@@ -96,7 +96,7 @@ const Community: React.FC = () => {
             >
               <div
                 className="bg-black/80 backdrop-blur-xl rounded-xl p-8 h-full border border-white/5 flex flex-col items-center
-               justify-between transition-transform duration-300"
+               justify-between transition-transform duration-300 group-hover:-translate-y-0.5"
               >
                 <div
                   className="p-4 rounded-full bg-linear-to-tr from-[#FFDC80] via-[#E1306C] to-[#833AB4] text-white mb-6
@@ -129,7 +129,7 @@ const Community: React.FC = () => {
             >
               <div
                 className="bg-black/80 backdrop-blur-xl rounded-xl p-8 h-full border border-white/5 flex flex-col items-center
-              justify-between transition-transform duration-300"
+              justify-between transition-transform duration-300 group-hover:-translate-y-0.5"
               >
                 <div className="p-4 rounded-full bg-[#5865F2]/20 text-[#5865F2] mb-6 shadow-[0_0_20px_rgba(88,101,242,0.3)]">
                   <DiscordIcon />
