@@ -1,10 +1,18 @@
-import React, { type FormEvent, useState } from "react";
+import React, { type FormEvent, useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { Link } from "react-router-dom"; // Importamos Link para la navegación
+import { Link, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
+
+// 1. Importamos el hook del contexto
+import { useAuth } from "../context/AuthContext";
 
 const Login: React.FC = () => {
   const currentYear = new Date().getFullYear();
+  const navigate = useNavigate();
+
+  // 2. Consumimos el contexto (login function, estado de carga y estado de sesión)
+  // Renombramos isLoading a isAuthLoading para claridad, aunque podría usarse directo
+  const { login, isLoggedIn, isLoading: isAuthLoading } = useAuth();
 
   // Estado del formulario
   const [formData, setFormData] = useState({
@@ -12,9 +20,12 @@ const Login: React.FC = () => {
     password: "",
   });
 
-  // (Opcional) Si quieres mantener el estado de carga visual, puedes dejarlo,
-  // aunque sin llamada a API no se usará mucho.
-  const [isLoading, setIsLoading] = useState(false);
+  // 3. Efecto de Redirección: Si ya estás logueado, te manda al Home
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
 
   // Manejar cambios en los inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,7 +37,7 @@ const Login: React.FC = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    // 1. Validación básica (Única lógica conservada)
+    // Validación básica
     if (!formData.email || !formData.password) {
       toast.warn("Por favor, completa todos los campos.", {
         position: "top-right",
@@ -36,20 +47,9 @@ const Login: React.FC = () => {
       return;
     }
 
-    // Aquí iría tu lógica real de conexión al backend en el futuro.
-    // Por ahora, solo indicamos visualmente que pasó la validación local (opcional)
-    setIsLoading(true);
-
-    // Simulación de Login Exitoso
-    setTimeout(() => {
-      toast.success("¡Bienvenido de nuevo, Barbero!", {
-        position: "top-center",
-        autoClose: 2500,
-        theme: "dark",
-        progressClassName: "bg-[#E69100]",
-      });
-      setIsLoading(false);
-    }, 1500);
+    // 4. Ejecutamos el login del contexto
+    // El contexto se encarga del loading, el toast de éxito y de actualizar el estado user
+    login(formData.email, formData.password);
   };
 
   return (
@@ -84,6 +84,17 @@ const Login: React.FC = () => {
           Volver al inicio
         </span>
       </Link>
+
+      {/* --- BACKGROUND --- */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="https://images.unsplash.com/photo-1503951914875-452162b7f30a?q=80&w=2070&auto=format&fit=crop"
+          alt="Barber Shop Background"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      </div>
+
       {/* --- 2. FORMULARIO (CARD) --- */}
       <div className="relative z-10 w-full max-w-md p-8 mx-4">
         {/* Contenedor con efecto Glassmorphism oscuro */}
@@ -181,28 +192,28 @@ const Login: React.FC = () => {
                 ¿No tienes cuenta?
               </Link>
 
-              <a
-                href="/forgot_validation"
+              <Link
+                to="/forgot_validation"
                 className="text-gray-400 hover:text-[#E69100] transition-colors font-medium"
               >
                 ¿Olvidaste tu contraseña?
-              </a>
+              </Link>
             </div>
 
             {/* Botón de Submit */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isAuthLoading} // Usamos el loading del contexto
               className={`w-full py-3 px-4 rounded-lg font-bold text-white shadow-lg 
               transition-all duration-300 transform hover:-translate-y-1 active:scale-95
               flex items-center justify-center gap-2
               ${
-                isLoading
+                isAuthLoading
                   ? "bg-gray-600 cursor-not-allowed"
                   : "bg-[#E69100] hover:bg-[#c97e00] hover:shadow-[#E69100]/40"
               }`}
             >
-              {isLoading ? (
+              {isAuthLoading ? (
                 <>
                   <svg
                     className="animate-spin h-5 w-5 text-white"

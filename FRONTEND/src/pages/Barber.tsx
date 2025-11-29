@@ -1,7 +1,11 @@
 import React from "react";
-import {Clock, Instagram, MapPin, Phone, Star} from "lucide-react";
+import { Clock, Instagram, MapPin, Phone, Star } from "lucide-react";
 
-import {galleryImages, mapUrl, services,} from "../components/Barber/BarberConstants.tsx";
+import {
+  galleryImages,
+  mapUrl,
+  services,
+} from "../components/Barber/BarberConstants.tsx";
 
 // Renombramos los imports de assets para evitar conflictos con componentes de Lucid
 // y para usarlos claramente como fuentes de imagen (src).

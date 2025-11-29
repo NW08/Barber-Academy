@@ -5,9 +5,10 @@ import InstagramIcon from "../components/Community/Instagram.tsx";
 import DiscordIcon from "../components/Community/Discord.tsx";
 import background from "../assets/pages/Community/community.jpeg";
 import AuthGuard from "../components/Guest/Guest.tsx";
+import { useAuth } from "../context/AuthContext.tsx";
 
 const Community: React.FC = () => {
-  const isAuthenticated = false;
+  const { isLoggedIn } = useAuth();
 
   // Estado para los números aleatorios
   const [stats, setStats] = useState({
@@ -187,7 +188,7 @@ const Community: React.FC = () => {
           </div>
         </div>
       </div>
-      {!isAuthenticated && <AuthGuard />}
+      {!isLoggedIn && <AuthGuard />}
     </section>
   );
 };

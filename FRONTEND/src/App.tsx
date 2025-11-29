@@ -5,13 +5,15 @@ import Layout from "./layout/Layout";
 // pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import Courses from "./pages/Courses";
+import Courses from "./pages/Courses.tsx";
 import About from "./pages/About";
 import Barber from "./pages/Barber";
 import Signup from "./pages/SignUp";
 import VerifyCode from "./pages/Forgot_Validation.tsx";
 import ResetPassword from "./pages/Forgot_Change.tsx";
 import Community from "./pages/Community.tsx";
+import Dashboard from "./pages/Dashboard.tsx";
+import Payments from "./pages/Payments.tsx";
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/forgot_validation" element={<VerifyCode />} />
       <Route path="/forgot_change" element={<ResetPassword />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/payment" element={<Payments />} />
     </Routes>
   );
 }

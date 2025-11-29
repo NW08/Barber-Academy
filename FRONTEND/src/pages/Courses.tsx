@@ -2,7 +2,7 @@ import React from "react";
 import { benefits } from "../assets/pages/Courses/CoursesConstants.ts";
 import { GradientLight } from "../components/Courses/GradientLight.tsx";
 import background from "../assets/pages/Home/background.png";
-import { Link } from "react-router-dom"; // Usamos Link para navegación interna
+import { Link } from "react-router-dom";
 
 // 1. Tipo para cada beneficio
 interface BenefitItem {
@@ -87,7 +87,7 @@ const Courses: React.FC = () => {
                duration-500 ease-in-out"
               >
                 <Link
-                  to="/"
+                  to="/payment"
                   className="px-8 py-3 rounded-full border border-white bg-white/10 backdrop-blur-md text-white font-bold text-lg
                     hover:bg-white hover:text-black transition-all duration-300 transform hover:scale-105 shadow-xl"
                 >
