@@ -8,7 +8,7 @@ import React, {
 import { toast } from "react-toastify"; // Opcional, para feedback visual
 
 // 1. Definimos la forma de nuestro Usuario
-interface User {
+export interface User {
   id: string;
   name: string;
   email: string;
