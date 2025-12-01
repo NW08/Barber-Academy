@@ -8,14 +8,14 @@ import { useAuth } from "../context/AuthContext";
 
 export const useDashboard = () => {
   const navigate = useNavigate();
-  // Extraemos la información del usuario Y el token del contexto
+  // 1. Extraemos 'token' además de 'auth' para pasarlo a los formularios
   const { auth, token, logout } = useAuth();
 
   // Gestión de UI (Pestaña activa: Perfil o Seguridad)
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
 
-  // --- 1. Lógica de Perfil ---
-  // Pasamos 'auth' y 'token' a useProfileForm para asegurar que la petición tenga credenciales
+  // --- Lógica de Perfil ---
+  // Inyectamos auth y token
   const {
     profile,
     isSaving: isProfileSaving,
@@ -26,16 +26,16 @@ export const useDashboard = () => {
     handleSaveProfile,
   } = useProfileForm(auth, token);
 
-  // --- 2. Lógica de Seguridad ---
-  // Hook independiente para cambio de contraseña
+  // --- Lógica de Seguridad ---
+  // Inyectamos auth y token (CRUCIAL para que useSecurityForm funcione)
   const {
     passwords,
     isSaving: isSecuritySaving,
     handlePasswordChange,
     handleSavePassword,
-  } = useSecurityForm();
+  } = useSecurityForm(auth, token);
 
-  // --- 3. Logout ---
+  // --- Logout ---
   const handleLogout = () => {
     if (logout) {
       logout();
@@ -43,11 +43,9 @@ export const useDashboard = () => {
     navigate("/login");
   };
 
-  // Combinamos el estado de carga para la UI global
-  // Si estamos en la tab de perfil, usamos el loading de perfil, etc.
+  // Combinamos el estado de carga para la UI global (Loading spinner en botones)
   const isSaving = activeTab === "profile" ? isProfileSaving : isSecuritySaving;
 
-  // Retornamos
   return {
     // Estado de UI
     activeTab,
