@@ -5,35 +5,35 @@ const sendMailToRegister = (userMail, token) => {
 
     return sendMail(
         userMail,
-        "Bienvenido a SMARTVET 🐶 😺",
+        "Bienvenido a Barber Academy",
         `
-            <h1>Confirma tu cuenta</h1>
-            <p>Hola, haz clic en el siguiente enlace para confirmar tu cuenta:</p>
+            <h1>CONFIRMACIÓN</h1>
+            <p>Confirma tu cuenta:</p>
             <a href="${process.env.URL_FRONTEND}confirm/${token}">
-            Confirmar cuenta
+            Confirmar Cuenta
             </a>
             <hr>
-            <footer>El equipo de SMARTVET te da la más cordial bienvenida.</footer>
+            <footer>¡Qué gusto verte en nuestra academia!</footer>
         `
     )
-}
+};
 
 const sendMailToRecoveryPassword = (userMail, token) => {
 
     return sendMail(
         userMail,
-        "Recupera tu contraseña",
+        "Recuperar Contraseña",
         `
-            <h1>SMARTVET - 🐶 😺</h1>
-            <p>Has solicitado restablecer tu contraseña.</p>
+            <h1>Barber Academy</h1>
+            <p>Si solicitaste restablecer tu contraseña copia el siguiente código. De lo contrario, ignora este correo.</p>
             <a href="${process.env.URL_FRONTEND}reset/${token}">
-            Clic para restablecer tu contraseña
+            Restablecer Contraseña
             </a>
             <hr>
-            <footer>El equipo de SMARTVET te da la más cordial bienvenida.</footer>
+            <footer>¡Qué gusto verte en nuestra academia!</footer>
         `
         )
-}
+};
 
 
 export {

@@ -1,8 +1,7 @@
-import nodemailer from "nodemailer"
 import dotenv from "dotenv"
-dotenv.config()
+import nodemailer from "nodemailer"
 
-
+dotenv.config();
 
 const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -12,7 +11,7 @@ const transporter = nodemailer.createTransport({
     user: process.env.USER_MAILTRAP,
     pass: process.env.PASS_MAILTRAP,
     },
-})
+});
 
 /**
  * Función genérica para enviar correos
@@ -28,12 +27,12 @@ const sendMail = async (to, subject, html) => {
             to,
             subject,
             html,
-        })
-        console.log("✅ Email enviado:", info.messageId)
+        });
+        console.log("Email Enviado:", info.messageId)
 
     } catch (error) {
-        console.error("❌ Error enviando email:", error.message)
+        console.error("Error durante el envío:", error.message)
     }
-}
+};
 
 export default sendMail
