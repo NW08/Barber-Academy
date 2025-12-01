@@ -65,7 +65,7 @@ El backend expone una API RESTful completamente documentada. Puedes consultar to
 
 1.  **Clonar repositorio:**
     ```bash
-    git clone [<URL_DEL_REPO>](https://github.com/NW08/Barber-Academy.git)
+    git clone https://github.com/NW08/Barber-Academy.git
     ```
 
 2.  **Configurar Entorno:**
