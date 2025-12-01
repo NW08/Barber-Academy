@@ -11,7 +11,13 @@ dotenv.config();
 
 // Middlewares
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: ["https://barber-academy-aw.vercel.app/", "http://localhost:5173"], // Tu URL de Vercel
+    methods: ["GET", "POST", "PUT"],
+    credentials: true,
+  }),
+);
 
 // Variables globales
 app.set("port", process.env.PORT || 3000);
