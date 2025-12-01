@@ -1,5 +1,4 @@
-# Backend - API de Gestión de Usuarios y Autenticación
-
+# Backend - Barber Academy
 Este repositorio contiene el código fuente del servidor (Backend) encargado de la lógica de negocio, conexión a base de datos y autenticación de usuarios. Provee una API RESTful segura para el registro, inicio de sesión, recuperación de contraseñas y gestión de perfiles.
 
 ## 📋 Características
