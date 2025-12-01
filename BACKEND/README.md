@@ -20,8 +20,4 @@ Este repositorio contiene el código fuente del servidor (Backend) encargado de 
 
 
 ## 📖 Documentación de la API
-
-A continuación se describen los principales endpoints disponibles.
-
-### 🔓 Autenticación (Público)
 📘 **Documentación Backend:** [Ver aquí](https://documenter.getpostman.com/view/49903825/2sB3dLVXeE)
