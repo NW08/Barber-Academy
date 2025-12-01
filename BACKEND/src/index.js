@@ -5,7 +5,6 @@ const iniciarServidor = async () => {
   try {
     // 1. Conectamos a la Base de Datos PRIMERO
     await connection();
-    console.log("Base de datos Conectada");
 
     // 2. Si la BD conecta, entonces levantamos el servidor
     const port = app.get("port");

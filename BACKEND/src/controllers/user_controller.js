@@ -25,6 +25,13 @@ const registro = async (req, res) => {
       });
     }
 
+    // Validación de longitud de contraseña
+    if (password.length < 8) {
+      return res
+        .status(400)
+        .json({ msg: "La contraseña debe tener al menos 8 caracteres." });
+    }
+
     // 2. Verificación de duplicados
     // Usamos nombres descriptivos como <<usuarioExistente>> en lugar de acciones <<verificar...>>
     const usuarioExistente = await User.findOne({ email });
@@ -84,8 +91,7 @@ const confirmarMail = async (req, res) => {
     }
 
     // 3. Confirmar cuenta y limpiar token
-    usuario.token = null;
-    usuario.confirmEmail = true;
+    usuario.confirmarCuenta();
 
     await usuario.save();
 
@@ -123,8 +129,7 @@ const recuperarPassword = async (req, res) => {
     }
 
     // 3. Generación de Token
-    const token = usuario.crearToken();
-    usuario.token = token;
+    const token = usuario.generarResetPasswordToken();
 
     // 4. Guardar en BD PRIMERO
     // Es vital guardar el token antes de enviar el correo.
@@ -150,16 +155,16 @@ const recuperarPassword = async (req, res) => {
 };
 
 const comprobarTokenPassword = async (req, res) => {
-  const { token } = req.params;
+  const { resetPasswordToken } = req.params;
 
   try {
     // 1. Verificación simple: ¿Existe el token?
-    if (!token) {
+    if (!resetPasswordToken) {
       return res.status(400).json({ msg: "Token no proporcionado" });
     }
 
     // 2. Buscar usuario por token
-    const usuario = await User.findOne({ token });
+    const usuario = await User.findOne({ resetPasswordToken });
 
     // 3. Validación de existencia
     // Simplificamos la lógica: si no hay usuario, el token es inválido.
@@ -183,7 +188,7 @@ const comprobarTokenPassword = async (req, res) => {
 };
 
 const crearNuevoPassword = async (req, res) => {
-  const { token } = req.params;
+  const { resetPasswordToken } = req.params;
   const { password, confirmPassword } = req.body;
 
   try {
@@ -198,7 +203,7 @@ const crearNuevoPassword = async (req, res) => {
     }
 
     // 2. Buscar usuario
-    const usuario = await User.findOne({ token });
+    const usuario = await User.findOne({ resetPasswordToken });
 
     if (!usuario) {
       // Aquí sí usamos 404 porque el recurso (usuario con ese token) no existe
@@ -207,16 +212,21 @@ const crearNuevoPassword = async (req, res) => {
         .json({ msg: "Lo sentimos, no se puede validar la cuenta" });
     }
 
+    const validation = usuario.matchPassword(password);
+    if (!validation) {
+      return res.status(404).json({ msg: "Contraseña Ingresada Incorrecta" });
+    }
+
     // 3. Actualización de credenciales
     // Es buena práctica limpiar el token inmediatamente para evitar reuso (Replay Attack)
-    usuario.token = null;
-    usuario.password = await usuario.encryptPassword(password);
+    usuario.limpiarResetPasswordToken();
+    usuario.actualizarPassword(confirmPassword);
 
     await usuario.save();
 
     // 4. Respuesta exitosa
     return res.status(200).json({
-      msg: "Felicitaciones, ya puedes iniciar sesión con tu nuevo password",
+      msg: "Felicitaciones, ya puedes iniciar sesión con tu nueva contraseña.",
     });
   } catch (error) {
     // Seguridad: Ocultar detalles del error al cliente

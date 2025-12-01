@@ -7,8 +7,8 @@ const sendMailToRegister = (userMail, token) => {
     `
             <h1>CONFIRMACIÓN</h1>
             <p>Confirma tu cuenta:</p>
-            <a href="${process.env.URL_FRONTEND}confirm/${token}">
-            Confirmar Cuenta
+            <a href="${process.env.URL_BACKEND}confirmar/${token}">
+            Haz Clic
             </a>
             <hr>
             <footer>¡Qué gusto verte en nuestra academia!</footer>
@@ -23,7 +23,7 @@ const sendMailToRecoveryPassword = (userMail, token) => {
     `
             <h1>Barber Academy</h1>
             <p>Si solicitaste restablecer tu contraseña copia el siguiente código. De lo contrario, ignora este correo.</p>
-            <a href="${process.env.URL_FRONTEND}reset/${token}">
+            <a href="${process.env.URL_BACKEND}recuperar/${token}">
             Restablecer Contraseña
             </a>
             <hr>
