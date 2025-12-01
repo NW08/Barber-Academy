@@ -1,12 +1,10 @@
-import sendMail from "../config/nodemailer.js"
-
+import sendMail from "../config/nodemailer.js";
 
 const sendMailToRegister = (userMail, token) => {
-
-    return sendMail(
-        userMail,
-        "Bienvenido a Barber Academy",
-        `
+  return sendMail(
+    userMail,
+    "Bienvenido a Barber Academy",
+    `
             <h1>CONFIRMACIÓN</h1>
             <p>Confirma tu cuenta:</p>
             <a href="${process.env.URL_FRONTEND}confirm/${token}">
@@ -14,16 +12,15 @@ const sendMailToRegister = (userMail, token) => {
             </a>
             <hr>
             <footer>¡Qué gusto verte en nuestra academia!</footer>
-        `
-    )
+        `,
+  );
 };
 
 const sendMailToRecoveryPassword = (userMail, token) => {
-
-    return sendMail(
-        userMail,
-        "Recuperar Contraseña",
-        `
+  return sendMail(
+    userMail,
+    "Recuperar Contraseña",
+    `
             <h1>Barber Academy</h1>
             <p>Si solicitaste restablecer tu contraseña copia el siguiente código. De lo contrario, ignora este correo.</p>
             <a href="${process.env.URL_FRONTEND}reset/${token}">
@@ -31,12 +28,8 @@ const sendMailToRecoveryPassword = (userMail, token) => {
             </a>
             <hr>
             <footer>¡Qué gusto verte en nuestra academia!</footer>
-        `
-        )
+        `,
+  );
 };
 
-
-export {
-    sendMailToRegister,
-    sendMailToRecoveryPassword
-}
+export { sendMailToRegister, sendMailToRecoveryPassword };

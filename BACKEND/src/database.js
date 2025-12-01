@@ -1,13 +1,12 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
+const connection = async () => {
+  try {
+    const { connection } = await mongoose.connect(process.env.DATABASE_URL);
+    console.log(`Database Connected: ${connection.host} - ${connection.port}`);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-const connection = async()=>{
-    try {
-        const {connection} = await mongoose.connect(process.env.MONGODB_URI_PRODUCTION)
-        console.log(`Database is connected on ${connection.host} - ${connection.port}`)
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-export default  connection
+export default connection;

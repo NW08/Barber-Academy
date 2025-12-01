@@ -1,6 +1,7 @@
-import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
@@ -56,9 +57,8 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
-
 
 // Métodos del modelo
 
@@ -101,11 +101,10 @@ userSchema.methods.limpiarResetPasswordToken = function () {
   this.resetPasswordExpires = null;
 };
 
-// Actualizar contraseña 
+// Actualizar contraseña
 userSchema.methods.actualizarPassword = async function (nuevaPassword) {
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(nuevaPassword, salt);
 };
-
 
 export default mongoose.model("User", userSchema);

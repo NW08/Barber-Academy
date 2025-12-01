@@ -1,7 +1,29 @@
 import js from "@eslint/js";
-import {defineConfig} from "eslint/config";
+import prettierConfig from "eslint-config-prettier";
+import prettierPlugin from "eslint-plugin-prettier";
 import globals from "globals";
 
-export default defineConfig([
-    {files: ["**/*.{js,mjs,cjs}"], plugins: {js}, extends: ["js/recommended"], languageOptions: {globals: globals.browser}},
-]);
+export default [
+  {
+    files: ["**/*.js"],
+    ignores: ["node_modules/**"],
+
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: {
+        ...globals.node,
+      },
+    },
+
+    plugins: {
+      prettier: prettierPlugin,
+    },
+
+    rules: {
+      ...js.configs.recommended.rules,
+      ...prettierConfig.rules,
+      "prettier/prettier": "warn",
+    },
+  },
+];

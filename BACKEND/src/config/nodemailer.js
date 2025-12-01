@@ -1,16 +1,16 @@
-import dotenv from "dotenv"
-import nodemailer from "nodemailer"
+import dotenv from "dotenv";
+import nodemailer from "nodemailer";
 
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
-    service: "gmail",
-    host: process.env.HOST_MAILTRAP,
-    port: process.env.PORT_MAILTRAP,
-    auth: {
+  service: "gmail",
+  host: process.env.HOST_MAILTRAP,
+  port: process.env.PORT_MAILTRAP,
+  auth: {
     user: process.env.USER_MAILTRAP,
     pass: process.env.PASS_MAILTRAP,
-    },
+  },
 });
 
 /**
@@ -20,19 +20,17 @@ const transporter = nodemailer.createTransport({
  * @param {string} html - Contenido HTML del correo
  */
 const sendMail = async (to, subject, html) => {
-
-    try {
-        const info = await transporter.sendMail({
-            from: '"NAVAJA DORADA" <admin@navajad.com>',
-            to,
-            subject,
-            html,
-        });
-        console.log("Email Enviado:", info.messageId)
-
-    } catch (error) {
-        console.error("Error durante el envío:", error.message)
-    }
+  try {
+    const info = await transporter.sendMail({
+      from: '"NAVAJA DORADA" <admin@navajad.com>',
+      to,
+      subject,
+      html,
+    });
+    console.log("Email Enviado:", info.messageId);
+  } catch (error) {
+    console.error("Error al enviar:", error.message);
+  }
 };
 
-export default sendMail
+export default sendMail;
