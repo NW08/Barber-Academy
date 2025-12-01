@@ -13,7 +13,7 @@ export interface User {
   name: string;
   email: string;
   avatar: string;
-  role: "admin" | "student" | "client"; // Para futuro control de roles
+  role: "admin" | "student" | "client";
 }
 
 // 2. Definimos qué datos y funciones compartirá el contexto
