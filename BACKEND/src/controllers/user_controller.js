@@ -16,10 +16,10 @@ const registro = async (req, res) => {
   try {
     // 1. Desestructuración y Validación (Fail Fast)
     // Es más seguro extraer explícitamente lo que esperas recibir
-    const { email, password } = req.body;
+    const { fullName, email, password, ciudad } = req.body;
 
     // Validación precisa: evita errores si envían campos extra vacíos que no importan
-    if (!email || !password) {
+    if (!fullName || !email || !password || !ciudad) {
       return res.status(400).json({
         msg: "Debes llenar todos los campos obligatorios",
       });
@@ -41,6 +41,25 @@ const registro = async (req, res) => {
         msg: "El email ya se encuentra registrado",
       });
     }
+
+    // Separar el fullName
+    let nombre = "";
+    let apellido = "";
+
+    if (fullName) {
+      const partes = fullName.trim().split(/\s+/);
+
+      nombre = partes.shift();
+      apellido = partes.join(" ");
+    }
+
+    req.body = {
+      nombre,
+      apellido,
+      ciudad,
+      email,
+      password,
+    };
 
     // 3. Creación del usuario
     /** @type {UserDocument} */
@@ -112,78 +131,75 @@ const recuperarPassword = async (req, res) => {
   const { email } = req.body;
 
   try {
-    // 1. Validación temprana
     if (!email) {
-      return res.status(400).json({
-        msg: "Debes ingresar un correo electrónico",
-      });
+      return res
+        .status(400)
+        .json({ msg: "Debes ingresar un correo electrónico" });
     }
 
-    // 2. Búsqueda de usuario
     const usuario = await User.findOne({ email });
-
     if (!usuario) {
-      return res.status(404).json({
-        msg: "El usuario no se encuentra registrado",
-      });
+      return res
+        .status(404)
+        .json({ msg: "El usuario no se encuentra registrado" });
     }
 
-    // 3. Generación de Token
-    const token = usuario.generarResetPasswordToken();
+    // 1. Generamos el token completo (ej: "ab123...xyz789")
+    const tokenCompleto = usuario.generarResetPasswordToken();
 
-    // 4. Guardar en BD PRIMERO
-    // Es vital guardar el token antes de enviar el correo.
-    // Si guardas después y falla, el usuario recibe un correo que no funciona.
+    // 2. DIVIDIMOS EL TOKEN
+    // Asumiendo que quieres que el código sea de 6 caracteres:
+    const corte = tokenCompleto.length - 6;
+    const tokenPrefix = tokenCompleto.slice(0, corte); // La parte oculta (se queda en el front)
+    const tokenSuffix = tokenCompleto.slice(corte); // Los últimos 6 (se envían por email)
+
     await usuario.save();
 
-    // 5. Enviar Correo
-    // Asumimos que la función de correo es asíncrona (promesa), por lo que agregamos 'await'.
-    // Si el correo falla, saltará al catch y avisará del error.
-    await sendMailToRecoveryPassword(email, token);
+    // 3. Enviamos SOLO los últimos 6 caracteres por correo
+    await sendMailToRecoveryPassword(email, tokenSuffix);
 
-    // 6. Respuesta Exitosa
+    // 4. Respondemos al Frontend con el PREFIJO
+    // El frontend guardará 'tokenPrefix' en memoria/state para completarlo luego.
     return res.status(200).json({
-      msg: "Revisa tu correo electrónico para restablecer tu contraseña",
+      msg: "Revisa tu correo e ingresa el código de 6 caracteres",
+      tokenPrefix: tokenPrefix, // <--- ESTO ES LO QUE NECESITAMOS EN LA SIGUIENTE PANTALLA
     });
   } catch (error) {
-    // Seguridad: Logueamos el error interno, pero no se lo mostramos al usuario
     console.error(error);
-    return res.status(500).json({
-      msg: "Error interno del servidor",
-    });
+    return res.status(500).json({ msg: "Error interno del servidor" });
   }
 };
 
 const comprobarTokenPassword = async (req, res) => {
+  // El frontend nos envía el token COMPLETO (Prefijo + Código Usuario)
   const { resetPasswordToken } = req.params;
 
   try {
-    // 1. Verificación simple: ¿Existe el token?
+    // 1. Verificación básica
     if (!resetPasswordToken) {
       return res.status(400).json({ msg: "Token no proporcionado" });
     }
 
-    // 2. Buscar usuario por token
+    // 2. Buscar usuario que tenga ese token y que no haya expirado
+    // resetPasswordExpires: { $gt: Date.now() } significa "que la fecha de expiración sea mayor a AHORA"
     const usuario = await User.findOne({
       resetPasswordToken,
       resetPasswordExpires: { $gt: Date.now() },
     });
 
-    // 3. Validación de existencia
-    // Simplificamos la lógica: si no hay usuario, el token es inválido.
+    // 3. Validación
     if (!usuario) {
       return res.status(404).json({
-        msg: "Lo sentimos, el token no es válido o ya expiró",
+        msg: "El código es inválido o ha expirado. Intenta solicitar uno nuevo.",
       });
     }
 
-    // 4. Respuesta exitosa
+    // 4. Éxito
     return res.status(200).json({
-      msg: "Token confirmado, ya puedes crear tu nuevo password",
+      msg: "Código verificado correctamente",
     });
   } catch (error) {
-    // Seguridad: No devolver el error crudo al cliente
-    console.error(error);
+    console.error("Error comprobando token:", error);
     return res.status(500).json({
       msg: "Error interno del servidor",
     });
@@ -389,11 +405,11 @@ const actualizarPassword = async (req, res) => {
 
 const actualizarPerfil = async (req, res) => {
   const { _id } = req.usuario;
-  const { nombre, apellido, email } = req.body;
+  const { nombre, apellido, email, ciudad } = req.body;
 
   try {
     // 1. Validación de campos obligatorios (Fail Fast)
-    if (!nombre || !apellido || !email) {
+    if (!nombre || !apellido || !email || !ciudad) {
       return res.status(400).json({
         msg: "Debes llenar todos los campos",
       });
@@ -424,6 +440,7 @@ const actualizarPerfil = async (req, res) => {
     usuario.nombre = nombre;
     usuario.apellido = apellido;
     usuario.email = email;
+    usuario.ciudad = ciudad;
 
     await usuario.save();
 
