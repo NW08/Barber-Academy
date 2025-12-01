@@ -164,7 +164,10 @@ const comprobarTokenPassword = async (req, res) => {
     }
 
     // 2. Buscar usuario por token
-    const usuario = await User.findOne({ resetPasswordToken });
+    const usuario = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
 
     // 3. Validación de existencia
     // Simplificamos la lógica: si no hay usuario, el token es inválido.
@@ -189,16 +192,16 @@ const comprobarTokenPassword = async (req, res) => {
 
 const crearNuevoPassword = async (req, res) => {
   const { resetPasswordToken } = req.params;
-  const { password, confirmPassword } = req.body;
+  const { password, newPassword } = req.body;
 
   try {
     // 1. Validaciones de entrada (Fail Fast)
     // Usamos status 400 (Bad Request) porque es error del cliente, no <<No encontrado>> (404)
-    if (!password || !confirmPassword) {
+    if (!password || !newPassword) {
       return res.status(400).json({ msg: "Debes llenar todos los campos" });
     }
 
-    if (password !== confirmPassword) {
+    if (newPassword !== password) {
       return res.status(400).json({ msg: "Los passwords no coinciden" });
     }
 
@@ -212,15 +215,16 @@ const crearNuevoPassword = async (req, res) => {
         .json({ msg: "Lo sentimos, no se puede validar la cuenta" });
     }
 
-    const validation = usuario.matchPassword(password);
-    if (!validation) {
-      return res.status(404).json({ msg: "Contraseña Ingresada Incorrecta" });
+    if (password.length < 8 || newPassword.length < 8) {
+      return res
+        .status(400)
+        .json({ msg: "La contraseña debe tener al menos 8 caracteres." });
     }
 
     // 3. Actualización de credenciales
     // Es buena práctica limpiar el token inmediatamente para evitar reuso (Replay Attack)
     usuario.limpiarResetPasswordToken();
-    usuario.actualizarPassword(confirmPassword);
+    await usuario.actualizarPassword(newPassword);
 
     await usuario.save();
 
@@ -259,7 +263,7 @@ const login = async (req, res) => {
 
     // 4. Validar cuenta confirmada
     // Usamos 403 (Forbidden) porque el usuario existe, pero no tiene permiso aún
-    if (!usuario.confirmEmail) {
+    if (!usuario.confirmado) {
       return res.status(403).json({
         msg: "Tu cuenta no ha sido confirmada aún",
       });
@@ -281,14 +285,12 @@ const login = async (req, res) => {
 
     // 7. Respuesta
     // Desestructuramos para enviar solo lo necesario
-    const { nombre, apellido, direccion, telefono, _id, rol } = usuario;
+    const { nombre, apellido, _id, rol } = usuario;
 
     return res.status(200).json({
       token,
       nombre,
       apellido,
-      direccion,
-      telefono,
       _id,
       rol,
       email: usuario.email, // Estandarizamos la respuesta
@@ -320,6 +322,8 @@ const perfil = (req, res) => {
   delete perfilUsuario.updatedAt;
   delete perfilUsuario.__v;
   delete perfilUsuario.password;
+  delete perfilUsuario.resetPasswordToken;
+  delete perfilUsuario.resetPasswordExpires;
 
   // 4. Respuesta
   res.status(200).json(perfilUsuario);
@@ -385,11 +389,11 @@ const actualizarPassword = async (req, res) => {
 
 const actualizarPerfil = async (req, res) => {
   const { _id } = req.usuario;
-  const { nombre, apellido, direccion, celular, email } = req.body;
+  const { nombre, apellido, email } = req.body;
 
   try {
     // 1. Validación de campos obligatorios (Fail Fast)
-    if (!nombre || !apellido || !direccion || !celular || !email) {
+    if (!nombre || !apellido || !email) {
       return res.status(400).json({
         msg: "Debes llenar todos los campos",
       });
@@ -419,8 +423,6 @@ const actualizarPerfil = async (req, res) => {
     // Actualizamos las propiedades del objeto Mongoose
     usuario.nombre = nombre;
     usuario.apellido = apellido;
-    usuario.direccion = direccion;
-    usuario.celular = celular;
     usuario.email = email;
 
     await usuario.save();
@@ -436,6 +438,8 @@ const actualizarPerfil = async (req, res) => {
     delete respuesta.__v;
     delete respuesta.createdAt;
     delete respuesta.updatedAt;
+    delete respuesta.resetPasswordToken;
+    delete respuesta.resetPasswordExpires;
 
     return res.status(200).json(respuesta);
   } catch (error) {
