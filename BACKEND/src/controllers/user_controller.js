@@ -156,6 +156,72 @@ const perfil =(req,res)=>{
         res.status(500).json({ msg : `Token invalido o expirado - ${error}`})
     }
 }
+
+const actualizarPassword = async (req,res)=>{
+    try{
+        //Paso 1
+        const {passwordactual,passwordnuevo} = req.body
+        const {_id} = req.UserHeader
+
+        //Paso 2
+        const userBDD = await User.findById(_id)
+        if(!userBDD)return res.status(404).json({msg : `Lo sentimos, no existe el usuario`})
+
+        const verificarPassword = await userBDD.matchPassword(passwordactual)
+        if(!verificarPassword) return res.status(404).json({ msg: "Lo sentimos, el password actual no es el correcto"})
+        //Paso 3
+        userBDD.password = await userBDD.encryptPassword(passwordnuevo)
+        await userBDD.save()
+        //Paso 4
+        res.status(200).json({msg:"Password actualizado correctamente"})
+    }catch(error){
+        res.status(500).json({msg:`❌ Error en el servidor - ${error}`})
+    }
+
+}
+const actualizarPerfil = async (req, res) => {
+    try {
+        // Paso 1 – Datos enviados
+        const { nombre, apellido, direccion, celular, email } = req.body
+        const { _id } = req.UserHeader
+
+        // Paso 2 – Validación
+        if (Object.values(req.body).includes("")) {
+            return res.status(400).json({ msg: "Debes llenar todos los campos" })
+        }
+
+        // Paso 3 – Verificar usuario en la BD
+        const userBDD = await User.findById(_id)
+        if (!userBDD) {
+            return res.status(404).json({ msg: "Usuario no encontrado" })
+        }
+
+        // Paso 4 – Verificar email duplicado
+        if (userBDD.email !== email) {
+            const emailExiste = await User.findOne({ email })
+            if (emailExiste) {
+                return res.status(400).json({ msg: "El correo ya está registrado por otro usuario" })
+            }
+        }
+
+        // Paso 5 – Actualizar datos
+        userBDD.nombre = nombre
+        userBDD.apellido = apellido
+        userBDD.direccion = direccion
+        userBDD.celular = celular
+        userBDD.email = email
+        const userActualizado = await userBDD.save()
+        // Paso 6 – Respuesta
+        const { password, token, confirmEmail, createdAt, updatedAt, __v, ...datosActualizados } = userActualizado._doc
+
+        res.status(200).json(datosActualizados)
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ msg: `❌ Error en el servidor - ${error}` })
+    }
+}
+
 export {
     confirmarMail,
     registro,
@@ -163,5 +229,7 @@ export {
     comprobarTokenPasword,
     crearNuevoPassword,
     login,
-    perfil
+    perfil,
+    actualizarPassword,
+    actualizarPerfil
 }
