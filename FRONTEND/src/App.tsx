@@ -9,12 +9,13 @@ import Courses from "./pages/Courses.tsx";
 import About from "./pages/About";
 import Barber from "./pages/Barber";
 import Signup from "./pages/SignUp";
-import VerifyCode from "./pages/Forgot_Validation.tsx";
-import ResetPassword from "./pages/Forgot_Change.tsx";
+import Forgot from "./pages/Forgot.tsx";
+import VerifyCode from "./pages/VerifyCode.tsx";
+import ForgotChange from "./pages/Change.tsx";
 import Community from "./pages/Community.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import Payments from "./pages/Payments.tsx";
-import Verified from "./pages/Verified.tsx";
+import ConfirmAccount from "./pages/ConfirmMail.tsx";
 
 function App() {
   return (
@@ -31,11 +32,12 @@ function App() {
       {/* Rutas SIN Header/Footer */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/recuperar" element={<Forgot />} />
       <Route path="/validation" element={<VerifyCode />} />
-      <Route path="/forgot_change" element={<ResetPassword />} />
+      <Route path="/change" element={<ForgotChange />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/payment" element={<Payments />} />
-      <Route path="/success" element={<Verified />} />
+      <Route path="/confirmar-cuenta/:token" element={<ConfirmAccount />} />
     </Routes>
   );
 }

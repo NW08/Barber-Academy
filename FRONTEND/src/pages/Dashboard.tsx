@@ -3,7 +3,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // Hook de Lógica (El que acabamos de crear)
-import { useDashboard } from "../Hooks/useDashboard.ts";
+import { useDashboard } from "../hooks/useDashboard.ts";
 
 // Componentes Modulares Visuales
 import Sidebar from "../components/Dashboard/Sidebar.tsx";
@@ -38,14 +38,6 @@ const Dashboard: React.FC = () => {
     relative"
     >
       {/* --- FONDO AMBIENTADO --- */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=2070&auto=format&fit=crop"
-          alt="Dashboard Background"
-          className="w-full h-full object-cover opacity-30 grayscale"
-        />
-        <div className="absolute inset-0 bg-linear-to-br from-black via-black/90 to-[#1a1a1a]/90 backdrop-blur-sm" />
-      </div>
 
       {/* --- CONTENEDOR PRINCIPAL (GLASSMORPHISM) --- */}
       <div

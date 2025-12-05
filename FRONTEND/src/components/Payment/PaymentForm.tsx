@@ -2,8 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 
-// Hooks Personalizados y Contexto
-import { usePaymentForm } from "../../Hooks/usePaymentForm.ts";
+// hooks Personalizados y Contexto
+import { usePaymentForm } from "../../hooks/usePaymentForm.ts";
 import { useAuth } from "../../context/AuthContext";
 
 // Componentes Modulares

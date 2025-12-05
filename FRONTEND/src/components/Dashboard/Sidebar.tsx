@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 interface UserProfile {
   name: string;
   city: string;
-  avatar: string;
+  avatarUrl: string;
 }
 
 interface SidebarProps {
@@ -52,7 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             <div className="w-full h-full rounded-full overflow-hidden border-2 border-[#E69100] p-1">
               <img
-                src={profile.avatar}
+                src={profile.avatarUrl}
                 alt="Avatar"
                 className="w-full h-full rounded-full object-cover"
               />

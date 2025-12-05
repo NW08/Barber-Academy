@@ -1,13 +1,19 @@
-import React, { type FormEvent, useState } from "react";
+import React, { type FormEvent, useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
+// Asegúrate de importar tu configuración de API
+import api from "../API/axiosConfig.ts";
 
-const ResetPassword: React.FC = () => {
+const ForgotChange: React.FC = () => {
   const currentYear = new Date().getFullYear();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Estado del formulario
+  // 1. RECUPERAR EL TOKEN COMPLETO (Prefijo + Código)
+  // Este viene de la navegación exitosa en VerifyCode.tsx
+  const token = location.state?.token;
+
   const [formData, setFormData] = useState({
     newPassword: "",
     confirmPassword: "",
@@ -15,41 +21,46 @@ const ResetPassword: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // Manejar cambios en los inputs
+  // 2. SEGURIDAD: Protección de Ruta
+  // Si el usuario intenta entrar aquí pegando la URL sin pasar por la validación anterior,
+  // el token será undefined. Lo sacamos de aquí.
+  useEffect(() => {
+    if (!token) {
+      toast.error("Acceso no autorizado. Inicia el proceso nuevamente.", {
+        theme: "dark",
+      });
+      navigate("/login");
+    }
+  }, [token, navigate]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Manejar el envío del formulario
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    // 1. Validar campos vacíos
+    // Validaciones Frontend
     if (!formData.newPassword || !formData.confirmPassword) {
-      toast.warn("Por favor, ingresa y confirma tu nueva contraseña.", {
+      toast.warn("Por favor, completa ambos campos.", {
         position: "top-right",
-        autoClose: 3000,
         theme: "dark",
       });
       return;
     }
 
-    // 2. Validar longitud mínima (ej. 8 caracteres)
     if (formData.newPassword.length < 8) {
       toast.error("La contraseña debe tener al menos 8 caracteres.", {
         position: "top-right",
-        autoClose: 3000,
         theme: "dark",
       });
       return;
     }
 
-    // 3. Validar que coincidan
     if (formData.newPassword !== formData.confirmPassword) {
       toast.error("Las contraseñas no coinciden.", {
         position: "top-right",
-        autoClose: 3000,
         theme: "dark",
       });
       return;
@@ -57,9 +68,15 @@ const ResetPassword: React.FC = () => {
 
     setIsLoading(true);
 
-    // 4. Simulación de proceso de cambio de contraseña
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      // 3. PETICIÓN AL BACKEND
+      // Ruta: router.post("/credencial/:resetPasswordToken", crearNuevoPassword);
+      // Body esperado: { password, newPassword }
+
+      await api.post(`/credencial/${token}`, {
+        password: formData.newPassword, // Tu backend espera 'password'
+        newPassword: formData.confirmPassword, // Tu backend espera 'newPassword' y compara ambos
+      });
 
       toast.success("¡Contraseña restablecida correctamente!", {
         position: "top-center",
@@ -68,26 +85,33 @@ const ResetPassword: React.FC = () => {
         progressClassName: "bg-[#E69100]",
       });
 
-      // Simulación de redirección al inicio después del éxito
+      // 4. REDIRECCIÓN AL LOGIN
+      // Ya terminó el flujo, debe iniciar sesión con su nueva clave
       setTimeout(() => {
-        navigate("/");
+        navigate("/login");
       }, 2500);
-    }, 1500);
+    } catch (error: any) {
+      console.error(error);
+      const errorMsg =
+        error.response?.data?.msg || "Error al restablecer contraseña.";
+
+      toast.error(errorMsg, {
+        position: "top-right",
+        theme: "dark",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    // Contenedor principal: Fondo negro puro
     <div className="relative h-screen w-full flex items-center justify-center overflow-hidden font-sans bg-black">
-      {/* --- BOTÓN VOLVER (Atrás) --- */}
+      {/* Botón Cancelar */}
       <Link
-        to="/verify-code" // Regresa al paso anterior
-        className="absolute top-6 left-6 z-50 flex items-center gap-2 text-white/70 hover:text-[#E69100]
-        transition-colors duration-300 group"
+        to="/login"
+        className="absolute top-6 left-6 z-50 flex items-center gap-2 text-white/70 hover:text-[#E69100] transition-colors duration-300 group"
       >
-        <div
-          className="p-2 rounded-full bg-white/5 border border-white/10 group-hover:border-[#E69100]/50 backdrop-blur-sm
-        transition-all"
-        >
+        <div className="p-2 rounded-full bg-white/5 border border-white/10 group-hover:border-[#E69100]/50 backdrop-blur-sm transition-all">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -106,16 +130,11 @@ const ResetPassword: React.FC = () => {
         <span className="font-medium text-sm hidden sm:block">Cancelar</span>
       </Link>
 
-      {/* --- CARD PRINCIPAL --- */}
       <div className="relative z-10 w-full max-w-md px-4">
-        <div
-          className="bg-zinc-900/60 border border-white/10 rounded-2xl shadow-2xl p-8 backdrop-blur-md transform
-        transition-all duration-500 hover:shadow-[#E69100]/50 hover:shadow-2xl"
-        >
+        <div className="bg-zinc-900/60 border border-white/10 rounded-2xl shadow-2xl p-8 backdrop-blur-md transform transition-all duration-500 hover:shadow-[#E69100]/50 hover:shadow-2xl">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#E69100]/10 mb-4 text-[#E69100]">
-              {/* Icono de Llave/Candado reiniciando */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -127,8 +146,7 @@ const ResetPassword: React.FC = () => {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0
-                  0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+                  d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
                 />
               </svg>
             </div>
@@ -142,7 +160,7 @@ const ResetPassword: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Input: Nueva Contraseña */}
+            {/* Password */}
             <div className="group">
               <label className="block text-gray-300 text-sm font-medium mb-2 ml-1">
                 Contraseña nueva
@@ -168,14 +186,12 @@ const ResetPassword: React.FC = () => {
                   value={formData.newPassword}
                   onChange={handleChange}
                   placeholder="Mínimo 8 caracteres"
-                  className="w-full pl-10 pr-4 py-3 bg-black/40 border border-gray-700 rounded-lg text-white
-                  placeholder-gray-600 focus:outline-none focus:border-[#E69100] focus:ring-1 focus:ring-[#E69100]
-                  transition-all duration-300"
+                  className="w-full pl-10 pr-4 py-3 bg-black/40 border border-gray-700 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-[#E69100] focus:ring-1 focus:ring-[#E69100] transition-all duration-300"
                 />
               </div>
             </div>
 
-            {/* Input: Confirmar Contraseña */}
+            {/* Confirm Password */}
             <div className="group">
               <label className="block text-gray-300 text-sm font-medium mb-2 ml-1">
                 Confirmar contraseña
@@ -190,9 +206,7 @@ const ResetPassword: React.FC = () => {
                   >
                     <path
                       fillRule="evenodd"
-                      d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34
-                      9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586
-                      7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                       clipRule="evenodd"
                     />
                   </svg>
@@ -203,22 +217,16 @@ const ResetPassword: React.FC = () => {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="Repite la contraseña"
-                  className="w-full pl-10 pr-4 py-3 bg-black/40 border border-gray-700 rounded-lg text-white
-                  placeholder-gray-600 focus:outline-none focus:border-[#E69100] focus:ring-1 focus:ring-[#E69100]
-                  transition-all duration-300"
+                  className="w-full pl-10 pr-4 py-3 bg-black/40 border border-gray-700 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-[#E69100] focus:ring-1 focus:ring-[#E69100] transition-all duration-300"
                 />
               </div>
             </div>
 
-            {/* Botón de Submit */}
             <div className="pt-2">
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full py-3 px-4 rounded-lg font-bold text-white shadow-lg 
-                transition-all duration-300 transform hover:-translate-y-1 active:scale-95
-                flex items-center justify-center gap-2
-                ${
+                className={`w-full py-3 px-4 rounded-lg font-bold text-white shadow-lg transition-all duration-300 transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2 ${
                   isLoading
                     ? "bg-gray-700 cursor-not-allowed"
                     : "bg-[#E69100] hover:bg-[#c97e00] hover:shadow-[#E69100]/40"
@@ -266,4 +274,4 @@ const ResetPassword: React.FC = () => {
   );
 };
 
-export default ResetPassword;
+export default ForgotChange;

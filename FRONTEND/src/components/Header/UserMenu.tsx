@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, LogOut, User } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext.tsx";
 import { Link } from "react-router-dom";
 
 const UserMenu = () => {
-  const { user, logout } = useAuth();
+  // 1. Extraemos ‘auth’ (el usuario) y ‘logout’ del contexto
+  const { auth, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -24,32 +25,38 @@ const UserMenu = () => {
     logout();
   };
 
-  if (!user) {
+  // Si no hay usuario logueado, no mostramos nada
+  if (!auth) {
     return null;
   }
 
+  // Generamos un avatar con las iniciales usando UI Avatars (Fallback elegante)
+  // Usamos tu color dorado para el fondo
+  const fullName = `${auth.nombre}+${auth.apellido}`;
+  const avatarUrl = `https://ui-avatars.com/api/?name=${fullName}&background=E69100&color=fff&size=128`;
+
   return (
     <div className="relative" ref={menuRef}>
-      {/* Botón del Perfil */}
+      {/* --- BOTÓN DEL PERFIL --- */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-3 py-1 px-2 rounded-full hover:bg-white/5 transition-all border border-transparent
-        hover:border-white/10 group"
+        hover:border-white/10 group focus:outline-none"
       >
-        {/* Texto de Bienvenida (Solo Desktop XL) */}
+        {/* Texto de Bienvenida (Visible en Desktop XL) */}
         <div className="text-right hidden xl:block">
           <p className="text-xs text-gray-400 font-medium">Bienvenido</p>
           <p className="text-sm text-white font-bold group-hover:text-[#E69100] transition-colors">
-            Hola, {user.name}
+            Hola, {auth.nombre}
           </p>
         </div>
 
         {/* Avatar */}
         <div className="relative">
-          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#E69100] p-0.5">
+          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#E69100] p-0.5 transition-transform group-hover:scale-105">
             <img
-              src={user.avatar}
-              alt="User Profile"
+              src={avatarUrl}
+              alt="Perfil"
               className="w-full h-full rounded-full object-cover"
             />
           </div>
@@ -60,7 +67,7 @@ const UserMenu = () => {
         {/* Icono Chevron */}
         <ChevronDown
           className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${
-            isOpen ? "rotate-180" : ""
+            isOpen ? "rotate-180 text-[#E69100]" : ""
           }`}
         />
       </button>
@@ -68,36 +75,44 @@ const UserMenu = () => {
       {/* --- MENÚ DESPLEGABLE (DROPDOWN) --- */}
       {isOpen && (
         <div
-          className="absolute right-0 top-full mt-3 w-60 bg-[#16141F] border border-white/10 rounded-xl shadow-2xl
-         shadow-black/50 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+          className="absolute right-0 top-full mt-3 w-64 bg-[#16141F] border border-white/10 rounded-xl shadow-2xl
+         shadow-black/50 overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50 origin-top-right"
         >
           {/* Header del Dropdown */}
           <div className="p-4 border-b border-white/5 bg-white/5">
-            <p className="text-white font-bold">{user.name}</p>
-            <p className="text-xs text-gray-400 truncate">{user.email}</p>
+            <p className="text-white font-bold text-base truncate">
+              {auth.nombre} {auth.apellido}
+            </p>
+            <p className="text-xs text-gray-400 truncate mt-0.5">
+              {auth.email}
+            </p>
+            <span className="inline-block mt-2 text-[10px] font-bold px-2 py-0.5 rounded bg-[#E69100]/20 text-[#E69100] uppercase tracking-wider">
+              {auth.rol}
+            </span>
           </div>
 
-          {/* Opciones */}
+          {/* Opciones de Navegación */}
           <div className="py-2">
-            <Link to="/dashboard">
-              <button
+            <Link to="/dashboard" onClick={() => setIsOpen(false)}>
+              <div
                 className="w-full px-4 py-3 text-left text-sm text-gray-300 hover:bg-white/5 hover:text-[#E69100]
-      flex items-center gap-3 transition-colors"
+                flex items-center gap-3 transition-colors cursor-pointer border-l-2 border-transparent hover:border-[#E69100]"
               >
                 <User className="w-4 h-4" />
-                Mi Perfil
-              </button>
+                <span>Mi Perfil</span>
+              </div>
             </Link>
           </div>
+
           {/* Logout */}
-          <div className="border-t border-white/5 p-2">
+          <div className="border-t border-white/5 p-2 bg-black/20">
             <button
               onClick={handleLogout}
-              className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-red-500/10 rounded-lg flex items-center
-              gap-3 transition-colors"
+              className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded-lg flex items-center
+              gap-3 transition-colors group"
             >
-              <LogOut className="w-4 h-4" />
-              Cerrar Sesión
+              <LogOut className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+              <span>Cerrar Sesión</span>
             </button>
           </div>
         </div>
